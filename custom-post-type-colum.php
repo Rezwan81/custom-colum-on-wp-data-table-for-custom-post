@@ -1,4 +1,125 @@
 <?php
+
+
+/**
+ * meta box colum
+ */
+add_filter( 'manage_edit-jobapplication_columns', 'my_edit_jobapplication_columns' ) ;
+
+function my_edit_jobapplication_columns( $columns ) {
+
+    $columns = array(
+        'cb' => '&lt;input type="checkbox" />',
+        'title' => __( 'Candidate Name' ),
+        'email' => __( 'Email' ),
+        'phone' => __( 'Phone' ),
+        'employee_type' => __( 'Employee Type' ),
+        'candidate_image' => __('Photo'),
+        // 'featured_image' => 'Featured Image',
+        'date' => __( 'Date' )
+    );
+
+    return $columns;
+}
+
+
+
+add_action( 'manage_jobapplication_posts_custom_column', 'my_manage_jobapplication_columns', 10, 2 );
+
+function my_manage_jobapplication_columns( $column, $post_id ) {
+    global $post;
+
+    switch( $column ) {
+
+        /* If displaying the 'duration' column. */
+        case 'email' :
+
+            /* Get the post meta. */
+            $email = get_post_meta( $post_id, 'email', true );
+
+            /* If no duration is found, output a default message. */
+            if ( empty( $email ) )
+                echo __( 'Unknown' );
+
+            /* If there is a duration, append 'minutes' to the text string. */
+            else
+                echo $email;
+
+            break;
+
+        case 'phone' :
+
+            /* Get the post meta. */
+            $phone = get_post_meta( $post_id, 'phone', true );
+
+            /* If no duration is found, output a default message. */
+            if ( empty( $phone ) )
+                echo __( 'Unknown' );
+
+            /* If there is a duration, append 'minutes' to the text string. */
+            else
+                echo $phone;
+
+            break;
+
+        // case 'featured_image':
+        
+        //     the_post_thumbnail( 'thumbnail' );
+
+        //     break;        
+
+        case 'candidate_image' :
+
+            /* Get the post meta.*/
+            $size = array('100', '100');
+            $photo = get_post_meta( $post_id, 'candidate_image', true );
+ 
+            /* If no duration is found, output a default message. */
+            if ( empty( $photo ) )
+                echo __( 'No image' );
+
+            /* If there is a duration, append 'minutes' to the text string. */
+            else
+                //echo $photo;
+                echo wp_get_attachment_image( $photo, $size );
+
+            break;    
+
+            /* Taxonomy 'job type category' column. */
+        case 'employee_type' :
+
+            /* Get the genres for the post. */
+            $taxonomy = $employee_type;
+            $post_type = get_post_type($post_id);
+
+            $terms = get_the_terms( $post_id, 'employee_type' );
+
+            /* If terms were found. */
+            if ( !empty( $terms ) ) {
+
+                // echo $terms;
+                foreach ( $terms as $term )
+            $post_terms[] ="<a href='edit.php?post_type={$post_type}&{$taxonomy}={$term->slug}'> " .esc_html(sanitize_term_field('name', $term->name, $term->term_id, $taxonomy, 'edit')) . "</a>";
+            echo join('', $post_terms );
+            }
+
+            /* If no terms were found, output a default message. */
+            else {
+                _e( 'No Type' );
+            }
+
+            break;    
+
+        /* Just break out of the switch statement for everything else. */
+        default :
+            break;
+    }
+}
+
+
+
+//another
+
 add_action( 'manage_jobapplication_posts_custom_column', 'my_manage_jobapplication_columns', 10, 2 );
 
 function my_manage_jobapplication_columns( $column, $post_id ) {
